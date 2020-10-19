@@ -1,0 +1,292 @@
+import 'package:flutter/material.dart';
+
+
+class AgeInfo {
+  final DateTime dob;
+  final List<String> months = [
+    'January',
+    'February',
+    'March',
+    'April',
+    'May',
+    'June',
+    'July',
+    'August',
+    'September',
+    'October',
+    'November',
+    'December'
+  ];
+  final List<String> daysOfWeek = [
+    'Monday',
+    'Tuesday',
+    'Wednesday',
+    'Thursday',
+    'Friday',
+    'Saturday',
+    'Sunday',
+  ];
+
+  AgeInfo(this.dob);
+
+  String get seconds {
+    DateTime currentTime = DateTime.now();
+    return currentTime.difference(dob).inSeconds.toString();
+  }
+
+  String get minutes {
+    DateTime currentTime = DateTime.now();
+    return currentTime.difference(dob).inMinutes.toString();
+  }
+
+  String get hours {
+    DateTime currentTime = DateTime.now();
+    return currentTime.difference(dob).inHours.toString();
+  }
+
+  String get days {
+    DateTime currentTime = DateTime.now();
+    return currentTime.difference(dob).inDays.toString();
+  }
+
+  String get weeks {
+    num totalWeeks = (num.parse(this.days) / 7).floor();
+    // num remainingDays = (num.parse(this.days) % 7);
+
+    return totalWeeks.toString();
+  }
+
+  String get years {
+    num totalYears = (num.parse(this.days) / 365);
+
+    return totalYears.toStringAsFixed(2);
+  }
+
+  String timeTil(int year) {
+    DateTime date = DateTime(year);
+    return dob.difference(date).inDays.toString();
+  }
+
+  String _getSuffix(int day) {
+    int i = day % 10;
+    if (i == 1 && day != 11) {
+      return 'st';
+    } else if (i == 2 && day != 12) {
+      return 'nd';
+    } else if (i == 3 && day != 13) {
+      return 'rd';
+    } else {
+      return 'th';
+    }
+  }
+
+  @override
+  String toString() {
+    return daysOfWeek.elementAt(dob.weekday - 1).toString() +
+        ", " +
+        dob.day.toString() +
+        _getSuffix(dob.day) +
+        " " +
+        months.elementAt(dob.month - 1) +
+        " " +
+        dob.year.toString();
+  }
+}
+
+
+class HomeScreen extends StatefulWidget {
+  @override
+  _HomeScreenState createState() => _HomeScreenState();
+}
+
+class _HomeScreenState extends State<HomeScreen> {
+  Map<String, String> ageInfoMap = {};
+  AgeInfo dob;
+  List<String> keys;
+  List<String> values;
+
+
+
+  @override
+  void initState() {
+    super.initState();
+    
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    var size = MediaQuery.of(context).size;
+
+    return Scaffold(
+      appBar: AppBar(
+        backgroundColor: Colors.blueGrey[900],
+        centerTitle: true,
+        title: Text(
+          'LastingAge',
+        ),
+      ),
+      body: Column(
+        children: <Widget>[
+          Container(
+            padding: EdgeInsets.symmetric(
+              vertical: 8.0,
+              horizontal: 8.0,
+            ),
+            color: Colors.blueGrey[800],
+            height: size.height * 0.25,
+            width: double.infinity,
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: <Widget>[
+                Container(
+                  child: Text(
+                    'Enter Your Birth Date',
+                    style: TextStyle(
+                      color: Colors.amber[200],
+                      fontSize: 18.0,
+                      fontWeight: FontWeight.w900,
+                    ),
+                  ),
+                ),
+                Container(
+                  margin: EdgeInsets.only(
+                    bottom: 20.0,
+                    top: 5.0,
+                  ),
+                  child: Text(
+                    'See how old you are...',
+                    style: TextStyle(
+                      color: Colors.blueGrey[400],
+                      fontSize: 12.0,
+                    ),
+                  ),
+                ),
+                MaterialButton(
+                  onPressed: () {
+                    showDatePicker(
+                      context: context,
+                      initialDate: DateTime.now(),
+                      firstDate: DateTime(1900),
+                      lastDate: DateTime(2021),
+                    ).then((date) {
+                      setState(() {
+                        dob = new AgeInfo(date);
+                        ageInfoMap['Years'] = dob.years;
+                        ageInfoMap['Weeks'] = dob.weeks;
+                        ageInfoMap['Days'] = dob.days;
+                        ageInfoMap['Hours'] = dob.hours;
+                        ageInfoMap['Minutes'] = dob.minutes;
+                        ageInfoMap['Seconds'] = dob.seconds;
+
+                        keys = ageInfoMap.keys.toList();
+                        values = ageInfoMap.values.toList();
+                      });
+                    });
+                  },
+                  minWidth: size.width * 0.40,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(
+                      5.0,
+                    ),
+                  ),
+                  elevation: 10.0,
+                  color: Colors.lightBlueAccent[200],
+                  splashColor: Colors.blueAccent[100],
+                  child: Text(
+                    'Choose Date',
+                    style: TextStyle(
+                      color: Colors.blueGrey[700],
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
+                Container(
+                  margin: EdgeInsets.only(
+                    top: 10.0,
+                  ),
+                  child: Text(
+                    dob == null ? '' : dob.toString(),
+                    style: TextStyle(
+                      fontSize: 12.0,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.lightBlue[50],
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+          Expanded(
+            child: Container(
+              decoration: BoxDecoration(
+                color: Colors.blueGrey[900],
+              ),
+              width: double.infinity,
+              child: dob == null
+                  ? Text('')
+                  : ListView.builder(
+                      padding: EdgeInsets.symmetric(
+                        vertical: 20.0,
+                      ),
+                      itemExtent: 60,
+                      itemCount: ageInfoMap.length,
+                      itemBuilder: (context, index) {
+                        return Center(
+                          child: Card(
+                            shadowColor: Colors.blueGrey[900],
+                            elevation: 10.0,
+                            margin: EdgeInsets.symmetric(
+                              vertical: 1.0,
+                              horizontal: 20.0,
+                            ),
+                            color: Colors.blueGrey[800],
+                            child: ListTile(
+                              // dense: true,
+                              onTap: () {
+                               
+                              },
+                              title: Text(
+                                keys.elementAt(index) + ": ",
+                                style: TextStyle(
+                                  color: Colors.blueGrey[50],
+                                ),
+                              ),
+                              trailing: Text(
+                                values.elementAt(index) + "",
+                                style: TextStyle(
+                                  color: Colors.amber,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ),
+                          ),
+                        );
+                      },
+                    ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+void main() {
+  runApp(MyApp());
+}
+
+class MyApp extends StatelessWidget {
+  // This widget is the root of your application.
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      debugShowCheckedModeBanner: false,
+      title: 'LastingAge',
+      theme: ThemeData(
+        primarySwatch: Colors.blue,
+        visualDensity: VisualDensity.adaptivePlatformDensity,
+      ),
+      home: HomeScreen(),
+    );
+  }
+}
