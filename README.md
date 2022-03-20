@@ -1,9 +1,9 @@
-# lasting_age
+# Lasting Age
 
-A new Flutter project.
+A flutter app that precisely calculates how old you are
 
-# Try it out
+## Try it out
 
-Copy and paste the contents of dartpad_raw.txt into dartpad.dev
+[Demo at **Dartpad.dev**](https://dartpad.dev/?id=6875f113ed4cfbbfc1803df2505d4329)
 
-
+![Preview](/preview.png)
