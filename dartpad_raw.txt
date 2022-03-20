@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'dart:async';
 
 
 class AgeInfo {
@@ -101,9 +102,9 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   Map<String, String> ageInfoMap = {};
-  AgeInfo dob;
-  List<String> keys;
-  List<String> values;
+  AgeInfo dob = new AgeInfo(DateTime.now());
+  List<String> keys = [];
+  List<String> values = [];
 
 
 
@@ -162,15 +163,16 @@ class _HomeScreenState extends State<HomeScreen> {
                   ),
                 ),
                 MaterialButton(
-                  onPressed: () {
-                    showDatePicker(
+                  onPressed: () async {
+                    final DateTime? date = await showDatePicker(
                       context: context,
                       initialDate: DateTime.now(),
                       firstDate: DateTime(1900),
-                      lastDate: DateTime(2021),
-                    ).then((date) {
+                      lastDate: DateTime.now(),
+                    );
+                    if (date != null && date != dob) {
                       setState(() {
-                        dob = new AgeInfo(date);
+                        dob = AgeInfo(date as DateTime);
                         ageInfoMap['Years'] = dob.years;
                         ageInfoMap['Weeks'] = dob.weeks;
                         ageInfoMap['Days'] = dob.days;
@@ -181,7 +183,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         keys = ageInfoMap.keys.toList();
                         values = ageInfoMap.values.toList();
                       });
-                    });
+                    }
                   },
                   minWidth: size.width * 0.40,
                   shape: RoundedRectangleBorder(
